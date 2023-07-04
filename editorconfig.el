@@ -550,18 +550,18 @@ See `editorconfig-lisp-use-default-indent' for details."
 
 (defun editorconfig-merge-coding-systems (end-of-line charset)
   "Return merged coding system symbol of END-OF-LINE and CHARSET."
-  (let ((eol (cond
-              ((equal end-of-line "lf") 'undecided-unix)
-              ((equal end-of-line "cr") 'undecided-mac)
-              ((equal end-of-line "crlf") 'undecided-dos)
-              (t 'undecided)))
-        (cs (cond
-             ((equal charset "latin1") 'iso-latin-1)
-             ((equal charset "utf-8") 'utf-8)
-             ((equal charset "utf-8-bom") 'utf-8-with-signature)
-             ((equal charset "utf-16be") 'utf-16be-with-signature)
-             ((equal charset "utf-16le") 'utf-16le-with-signature)
-             (t 'undecided))))
+  (let ((eol (pcase end-of-line
+               ("lf" 'undecided-unix)
+               ("cr" 'undecided-mac)
+               ("crlf" 'undecided-dos)
+               (_ 'undecided)))
+        (cs (pcase charset
+              ("latin1" 'iso-latin-1)
+              ("utf-8" 'utf-8-auto)
+              ("utf-8-bom" 'utf-8-with-signature)
+              ("utf-16be" 'utf-16be-with-signature)
+              ("utf-16le" 'utf-16le-with-signature)
+              (_ 'undecided))))
     (merge-coding-systems cs eol)))
 
 (cl-defun editorconfig-set-coding-system-revert (end-of-line charset)
